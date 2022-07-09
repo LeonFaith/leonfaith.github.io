@@ -1,0 +1,17 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>LeonFaith.com</title>
+        <link>https://leonfaith.github.io/</link>
+        <description> Be a Happy Perpetual Learner </description>
+        <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 08 Jul 2022 15:51:58 -0700</lastBuildDate>
+            <atom:link href="https://leonfaith.github.io/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>My first post</title>
+    <link>https://leonfaith.github.io/posts/my-first-post/</link>
+    <pubDate>Fri, 08 Jul 2022 15:51:58 -0700</pubDate>
+    <author>Author</author>
+    <guid>https://leonfaith.github.io/posts/my-first-post/</guid>
+    <description><![CDATA[Ansible Learning 1 print (&#34;hello world&#34;) ]]></description>
+</item>
+</channel>
+</rss>
