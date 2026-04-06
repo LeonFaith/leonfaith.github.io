@@ -1,0 +1,24 @@
+/* Homepage background image */
+body.home {
+  background-image: url('/img/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Darken overlay so text stays readable */
+body.home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Make homepage content sit above overlay */
+body.home > div {
+  position: relative;
+  z-index: 1;
+}
