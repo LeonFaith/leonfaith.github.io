@@ -1,6 +1,6 @@
 ---
 title: "Hello World"
-date: 2026-04-07
+date: 2026-04-06
 tags: ["personal"]
 draft: false
 ---
