@@ -1,4 +1,4 @@
-colorScheme = "congo"
+colorScheme = "ocean"
 defaultAppearance = "dark"
 autoSwitchAppearance = true
 
@@ -17,7 +17,7 @@ enableImageLazyLoading = true
   showScrollToTop = true
 
 [homepage]
-  layout = "background"
+  layout = "profile"
   showRecent = true
   recentLimit = 5
 

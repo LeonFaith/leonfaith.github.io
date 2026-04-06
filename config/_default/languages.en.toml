@@ -12,7 +12,7 @@ title = "Leon Wang"
 [params.author]
   name = "Leon Wang"
   headline = "Software engineer & network enthusiast"
-  bio = "Writing about tech, networking, and life."
+  bio = "I write about tech, networking, and whatever else is on my mind."
   links = [
     { github = "https://github.com/LeonFaith" },
   ]
