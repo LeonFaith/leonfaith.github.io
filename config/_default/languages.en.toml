@@ -1,0 +1,18 @@
+languageCode = "en"
+languageName = "English"
+weight = 1
+
+title = "Leon Wang"
+
+[params]
+  dateFormat = "2 January 2006"
+  mainSections = ["posts"]
+  description = "Tech and personal blog by Leon Wang."
+
+[params.author]
+  name = "Leon Wang"
+  headline = "Software engineer & network enthusiast"
+  bio = "Writing about tech, networking, and life."
+  links = [
+    { github = "https://github.com/LeonFaith" },
+  ]
