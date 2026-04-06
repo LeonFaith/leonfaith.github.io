@@ -15,4 +15,5 @@ title = "Leon Wang"
   bio = "I write about tech, networking, and whatever else is on my mind."
   links = [
     { github = "https://github.com/LeonFaith" },
+    { linkedin = "https://www.linkedin.com/in/yueyao-leon-wang/" },
   ]

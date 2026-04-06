@@ -13,3 +13,4 @@ I'm also deep into AI and software. I like building things, breaking things, and
 ---
 
 - [GitHub](https://github.com/LeonFaith)
+- [LinkedIn](https://www.linkedin.com/in/yueyao-leon-wang/)
