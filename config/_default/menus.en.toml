@@ -12,3 +12,8 @@
   name = "Tags"
   url = "/tags/"
   weight = 30
+
+[[main]]
+  name = "Gallery"
+  url = "/gallery/"
+  weight = 40

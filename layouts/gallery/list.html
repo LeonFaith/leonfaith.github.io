@@ -1,0 +1,35 @@
+{{ define "main" }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+
+<article class="prose dark:prose-invert max-w-none">
+  <h1 class="text-4xl font-extrabold mb-2">{{ .Title }}</h1>
+  {{ with .Description }}<p class="text-neutral-500 dark:text-neutral-400 mt-0">{{ . }}</p>{{ end }}
+</article>
+
+{{ $images := readDir "static/img/gallery" }}
+{{ if $images }}
+<div class="gallery-grid mt-8">
+  {{ range $images }}
+    {{ if not .IsDir }}
+    {{ $ext := lower (path.Ext .Name) }}
+    {{ if or (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".png") (eq $ext ".webp") (eq $ext ".gif") }}
+    <a href="/img/gallery/{{ .Name }}" class="glightbox gallery-item" data-gallery="main">
+      <img
+        src="/img/gallery/{{ .Name }}"
+        alt="{{ .Name }}"
+        loading="lazy"
+      />
+    </a>
+    {{ end }}
+    {{ end }}
+  {{ end }}
+</div>
+{{ else }}
+<p class="text-neutral-500 dark:text-neutral-400 mt-8 text-center">No photos yet — drop images into <code>static/img/gallery/</code> to get started.</p>
+{{ end }}
+
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+  GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });
+</script>
+{{ end }}
