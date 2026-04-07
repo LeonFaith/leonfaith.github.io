@@ -49,3 +49,58 @@ body.home > div {
   transform: scale(1.04);
   opacity: 0.88;
 }
+
+/* Album grid */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.album-card {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  text-decoration: none;
+}
+
+.album-card img,
+.album-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.album-placeholder {
+  background: #333;
+}
+
+.album-card:hover img {
+  transform: scale(1.04);
+}
+
+.album-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 14px 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.album-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.album-count {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.8rem;
+}

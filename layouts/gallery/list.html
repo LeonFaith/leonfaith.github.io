@@ -1,35 +1,72 @@
 {{ define "main" }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
 
-<article class="prose dark:prose-invert max-w-none">
-  <h1 class="text-4xl font-extrabold mb-2">{{ .Title }}</h1>
-  {{ with .Description }}<p class="text-neutral-500 dark:text-neutral-400 mt-0">{{ . }}</p>{{ end }}
+<article class="prose dark:prose-invert max-w-none mb-8">
+  {{ if .Parent.IsHome }}
+    <h1 class="text-4xl font-extrabold mb-2">{{ .Title }}</h1>
+    {{ with .Description }}<p class="text-neutral-500 dark:text-neutral-400 mt-0">{{ . }}</p>{{ end }}
+  {{ else }}
+    <nav class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+      <a href="/gallery/" class="hover:text-primary-600 dark:hover:text-primary-400">Gallery</a>
+      <span class="mx-2">/</span>
+      <span>{{ .Title }}</span>
+    </nav>
+    <h1 class="text-4xl font-extrabold mb-2">{{ .Title }}</h1>
+    {{ with .Description }}<p class="text-neutral-500 dark:text-neutral-400 mt-0">{{ . }}</p>{{ end }}
+  {{ end }}
 </article>
 
-{{ $images := readDir "static/img/gallery" }}
-{{ if $images }}
-<div class="gallery-grid mt-8">
-  {{ range $images }}
-    {{ if not .IsDir }}
-    {{ $ext := lower (path.Ext .Name) }}
-    {{ if or (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".png") (eq $ext ".webp") (eq $ext ".gif") }}
-    <a href="/img/gallery/{{ .Name }}" class="glightbox gallery-item" data-gallery="main">
-      <img
-        src="/img/gallery/{{ .Name }}"
-        alt="{{ .Name }}"
-        loading="lazy"
-      />
-    </a>
+{{ if .Sections }}
+  {{/* Main gallery page — show album cards */}}
+  <div class="album-grid">
+    {{ range .Sections }}
+      {{ $albumDir := printf "static/img/gallery/%s" .Params.photoDir }}
+      {{ $images := readDir $albumDir }}
+      {{ $cover := "" }}
+      {{ range $images }}
+        {{ if and (eq $cover "") (not .IsDir) }}
+          {{ $ext := lower (path.Ext .Name) }}
+          {{ if or (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".png") (eq $ext ".webp") }}
+            {{ $cover = .Name }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      <a href="{{ .RelPermalink }}" class="album-card">
+        {{ if $cover }}
+          <img src="/img/gallery/{{ .Params.photoDir }}/{{ $cover }}" alt="{{ .Title }}" loading="lazy" />
+        {{ else }}
+          <div class="album-placeholder"></div>
+        {{ end }}
+        <div class="album-label">
+          <span class="album-title">{{ .Title }}</span>
+          <span class="album-count">{{ len $images }} photos</span>
+        </div>
+      </a>
     {{ end }}
-    {{ end }}
-  {{ end }}
-</div>
+  </div>
+
 {{ else }}
-<p class="text-neutral-500 dark:text-neutral-400 mt-8 text-center">No photos yet — drop images into <code>static/img/gallery/</code> to get started.</p>
+  {{/* Inside an album — show photo grid */}}
+  {{ $photoDir := .Params.photoDir }}
+  {{ if $photoDir }}
+    {{ $dir := printf "static/img/gallery/%s" $photoDir }}
+    {{ $images := readDir $dir }}
+    <div class="gallery-grid">
+      {{ range $images }}
+        {{ if not .IsDir }}
+          {{ $ext := lower (path.Ext .Name) }}
+          {{ if or (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".png") (eq $ext ".webp") (eq $ext ".gif") }}
+            <a href="/img/gallery/{{ $photoDir }}/{{ .Name }}" class="glightbox gallery-item" data-gallery="album">
+              <img src="/img/gallery/{{ $photoDir }}/{{ .Name }}" alt="{{ .Name }}" loading="lazy" />
+            </a>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </div>
+  {{ end }}
+
+  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+  <script>GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });</script>
 {{ end }}
 
-<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-<script>
-  GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });
-</script>
 {{ end }}
