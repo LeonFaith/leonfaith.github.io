@@ -1,0 +1,43 @@
+{{ partial "profile.html" }}
+<section class="prose dark:prose-invert">{{ .Content | emojify }}</section>
+{{ partial "recent-articles.html" . }}
+
+{{/* Gallery preview */}}
+{{ $galleryPage := .Site.GetPage "/gallery" }}
+{{ if $galleryPage }}
+  {{ $albums := $galleryPage.Sections }}
+  {{ if $albums }}
+    <div class="mt-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-extrabold m-0">Gallery</h2>
+        <a href="/gallery/" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">View all →</a>
+      </div>
+      <div class="home-album-strip">
+        {{ range $albums }}
+          {{ $photoDir := .Params.photoDir }}
+          {{ $cover := "" }}
+          {{ if $photoDir }}
+            {{ $dir := printf "static/img/gallery/%s" $photoDir }}
+            {{ $images := readDir $dir }}
+            {{ range $images }}
+              {{ if and (eq $cover "") (not .IsDir) }}
+                {{ $ext := lower (path.Ext .Name) }}
+                {{ if or (eq $ext ".jpg") (eq $ext ".jpeg") (eq $ext ".png") (eq $ext ".webp") }}
+                  {{ $cover = .Name }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+          <a href="{{ .RelPermalink }}" class="home-album-card">
+            {{ if $cover }}
+              <img src="/img/gallery/{{ $photoDir }}/{{ $cover }}" alt="{{ .Title }}" loading="lazy" />
+            {{ else }}
+              <div class="home-album-placeholder"></div>
+            {{ end }}
+            <div class="home-album-label">{{ .Title }}</div>
+          </a>
+        {{ end }}
+      </div>
+    </div>
+  {{ end }}
+{{ end }}
