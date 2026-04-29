@@ -1,7 +1,7 @@
 {{/* 3D Basketball Player */}}
 <div class="bball-wrap">
   <canvas id="bball-canvas" width="340" height="340" style="display:block;margin:0 auto;cursor:grab;"></canvas>
-  <p class="bball-hint">drag to rotate</p>
+  <p class="bball-hint">↺ drag to rotate</p>
 </div>
 
 <script type="module">
@@ -9,7 +9,7 @@ import * as THREE from '/js/three.module.min.js';
 window.THREE = THREE;
 window.dispatchEvent(new Event('three-ready'));
 </script>
-<script src="/js/basketball3d.js?v=2" defer></script>
+<script src="/js/basketball3d.js?v=3" defer></script>
 
 {{ partial "profile.html" }}
 <section class="prose dark:prose-invert">{{ .Content | emojify }}</section>
