@@ -1,9 +1,10 @@
-(function () {
+function initBball() {
   const canvas = document.getElementById('bball-canvas');
   if (!canvas) return;
+  if (typeof THREE === 'undefined') return;
 
   const H = 340;
-  const getW = () => Math.min(canvas.parentElement.clientWidth, 400);
+  const getW = () => Math.min(window.innerWidth - 48, 400);
 
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -221,4 +222,10 @@
     renderer.render(scene, camera);
   }
   animate();
-})();
+}
+
+if (document.readyState === 'complete') {
+  initBball();
+} else {
+  window.addEventListener('load', initBball);
+}
