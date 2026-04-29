@@ -4,8 +4,12 @@
   <p class="bball-hint">drag to rotate</p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js" crossorigin="anonymous"></script>
-<script src="/js/basketball3d.js"></script>
+<script type="module">
+import * as THREE from '/js/three.module.min.js';
+window.THREE = THREE;
+window.dispatchEvent(new Event('three-ready'));
+</script>
+<script src="/js/basketball3d.js" defer></script>
 
 {{ partial "profile.html" }}
 <section class="prose dark:prose-invert">{{ .Content | emojify }}</section>
