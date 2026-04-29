@@ -224,8 +224,7 @@ function initBball() {
   animate();
 }
 
-if (document.readyState === 'complete') {
-  initBball();
-} else {
-  window.addEventListener('load', initBball);
-}
+window.addEventListener('three-ready', initBball);
+window.addEventListener('load', function() {
+  if (typeof THREE !== 'undefined') initBball();
+});
