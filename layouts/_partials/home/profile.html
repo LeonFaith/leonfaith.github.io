@@ -1,3 +1,12 @@
+{{/* 3D Basketball Player */}}
+<div class="bball-wrap">
+  <canvas id="bball-canvas" style="display:block;margin:0 auto;cursor:grab;"></canvas>
+  <p class="bball-hint">drag to rotate</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+<script src="/js/basketball3d.js"></script>
+
 {{ partial "profile.html" }}
 <section class="prose dark:prose-invert">{{ .Content | emojify }}</section>
 {{ partial "recent-articles.html" . }}

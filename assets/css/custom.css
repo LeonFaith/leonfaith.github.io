@@ -105,6 +105,21 @@ body.home > div {
   font-size: 0.8rem;
 }
 
+/* 3D basketball player */
+.bball-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bball-hint {
+  font-size: 0.7rem;
+  color: rgba(150,150,150,0.6);
+  margin-top: -4px;
+  letter-spacing: 0.05em;
+}
+
 /* Homepage album strip */
 .home-album-strip {
   display: flex;
