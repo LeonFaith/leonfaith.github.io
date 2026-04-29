@@ -1,223 +1,225 @@
+var _bballInited = false;
+
 function initBball() {
-  const canvas = document.getElementById('bball-canvas');
-  if (!canvas) return;
+  if (_bballInited) return;
   if (typeof THREE === 'undefined') return;
+  var canvas = document.getElementById('bball-canvas');
+  if (!canvas) return;
+  _bballInited = true;
 
-  const H = 340;
-  const getW = () => Math.min(window.innerWidth - 48, 400);
+  var H = 360;
+  var W = Math.min(window.innerWidth - 32, 380);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
   renderer.setClearColor(0x000000, 0);
 
-  const camera = new THREE.PerspectiveCamera(42, getW() / H, 0.1, 200);
-  camera.position.set(0, 6, 22);
-  camera.lookAt(0, 6, 0);
+  var scene = new THREE.Scene();
 
-  const scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 200);
+  camera.position.set(0, 7, 26);
+  camera.lookAt(0, 7, 0);
 
   // Lighting
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.9);
-  sun.position.set(6, 14, 10);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.8);
+  sun.position.set(5, 12, 8);
   scene.add(sun);
-  const fill = new THREE.DirectionalLight(0x88aaff, 0.25);
-  fill.position.set(-6, 2, -8);
+  var fill = new THREE.DirectionalLight(0xffeedd, 0.3);
+  fill.position.set(-4, 2, -5);
   scene.add(fill);
 
-  // ── Palette ──────────────────────────────────────────
-  const C = {
-    skin:    0xFFBF86,
-    hair:    0x1A0A00,
-    eye:     0x1A0A00,
-    black:   0x111111,
-    silver:  0xAAAAAA,
-    white:   0xEEEEEE,
-    shoe:    0xDDDDDD,
-    orange:  0xE8701A,
-    seam:    0x7A2E00,
-  };
+  // ── Colors ──────────────────────────────────────────
+  var GOLD   = 0xE8B84B;  // lab golden
+  var DGOLD  = 0xC49020;  // darker golden (ears, snout shade)
+  var CREAM  = 0xF5DFA0;  // lighter chest / muzzle
+  var BNOSE  = 0x1A1A1A;  // black nose / eyes
+  var PINK   = 0xFF9999;  // tongue
+  var BLACK  = 0x111111;  // jersey
+  var SILVER = 0x999999;  // jersey trim
+  var WHITE  = 0xEEEEEE;  // eye whites
+  var ORANGE = 0xE8701A;  // basketball
+  var SEAM   = 0x7A2E00;  // ball seams
 
-  // ── Voxel helpers ────────────────────────────────────
-  const mats = {};
-  function mat(color) {
-    if (!mats[color]) mats[color] = new THREE.MeshLambertMaterial({ color });
-    return mats[color];
+  // ── Voxel helper ────────────────────────────────────
+  var matCache = {};
+  function mat(c) {
+    if (!matCache[c]) matCache[c] = new THREE.MeshLambertMaterial({ color: c });
+    return matCache[c];
   }
-
-  function box(group, x, y, z, w, h, d, color) {
-    const m = new THREE.Mesh(
-      new THREE.BoxGeometry(w - 0.06, h - 0.06, d - 0.06),
+  function b(group, x, y, z, w, h, d, color) {
+    var mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(w - 0.07, h - 0.07, d - 0.07),
       mat(color)
     );
-    m.position.set(x, y, z);
-    group.add(m);
+    mesh.position.set(x, y, z);
+    group.add(mesh);
   }
 
-  // ── Character ────────────────────────────────────────
-  const player = new THREE.Group();
+  var dog = new THREE.Group();
 
-  // Shoes
-  box(player, -0.75, 0.55,  0.1, 1.5, 1.0, 1.4, C.shoe);
-  box(player,  0.75, 0.55,  0.1, 1.5, 1.0, 1.4, C.shoe);
-  // Shoe accents
-  box(player, -0.75, 0.55,  0.72, 1.45, 0.9, 0.07, C.black);
-  box(player,  0.75, 0.55,  0.72, 1.45, 0.9, 0.07, C.black);
+  // ── Back legs ───────────────────────────────────────
+  b(dog, -1.1, 2.2, 0,   1.3, 3.8, 1.3, GOLD);   // left rear leg
+  b(dog,  1.1, 2.2, 0,   1.3, 3.8, 1.3, GOLD);   // right rear leg
+  // Paws
+  b(dog, -1.2, 0.4, 0.3, 1.5, 0.8, 1.8, DGOLD);
+  b(dog,  1.2, 0.4, 0.3, 1.5, 0.8, 1.8, DGOLD);
 
-  // Legs / shorts (black)
-  box(player, -0.75, 3.5, 0, 1.1, 4.0, 1.1, C.black);
-  box(player,  0.75, 3.5, 0, 1.1, 4.0, 1.1, C.black);
+  // ── Body / jersey ────────────────────────────────────
+  b(dog,  0, 7.0, 0,   3.6, 5.5, 2.4, BLACK);    // main torso
+  // Golden chest peeking out top & sides
+  b(dog,  0, 9.0, 1.25, 2.0, 1.5, 0.1, CREAM);
+  b(dog, -1.9, 7.0, 0,  0.2, 5.0, 2.2, GOLD);
+  b(dog,  1.9, 7.0, 0,  0.2, 5.0, 2.2, GOLD);
+  // Jersey silver trim lines
+  b(dog, -1.7, 7.0, 1.22, 0.1, 4.5, 0.08, SILVER);
+  b(dog,  1.7, 7.0, 1.22, 0.1, 4.5, 0.08, SILVER);
+  // Star on jersey
+  b(dog,  0, 7.8, 1.22, 0.9, 0.9, 0.08, SILVER);
+  b(dog,  0, 7.8, 1.22, 0.2, 2.0, 0.08, SILVER);
 
-  // Torso / jersey
-  box(player,  0,    8.0, 0, 3.1, 4.5, 1.6, C.black);
-  // Jersey silver side stripes
-  box(player, -1.6,  8.0, 0, 0.15, 4.0, 1.5, C.silver);
-  box(player,  1.6,  8.0, 0, 0.15, 4.0, 1.5, C.silver);
-  // Jersey number "21" (simplified as two silver bars)
-  box(player, -0.35, 8.2, 0.82, 0.25, 1.8, 0.08, C.silver);
-  box(player,  0.35, 8.2, 0.82, 0.25, 1.8, 0.08, C.silver);
-  box(player,  0,    9.1, 0.82, 0.7,  0.2, 0.08, C.silver);
-  box(player,  0,    8.2, 0.82, 0.7,  0.2, 0.08, C.silver);
-  box(player,  0,    7.3, 0.82, 0.7,  0.2, 0.08, C.silver);
+  // ── Tail ────────────────────────────────────────────
+  b(dog, -0.1, 9.6, -1.5, 0.9, 0.9, 1.2, GOLD);
+  b(dog, -0.1, 10.4,-2.3, 0.8, 0.8, 0.8, GOLD);
 
-  // Left arm (relaxed, slightly out)
-  box(player, -2.15, 8.4,  0, 1.1, 1.5, 1.1, C.black);  // shoulder cap
-  box(player, -2.15, 6.8,  0, 1.0, 1.8, 1.0, C.skin);   // forearm
-  box(player, -2.15, 5.7,  0, 0.9, 0.8, 0.9, C.skin);   // hand
+  // ── Front arms ──────────────────────────────────────
+  // Left arm (relaxed down)
+  b(dog, -2.2, 7.5, 0,   1.3, 2.2, 1.2, GOLD);
+  b(dog, -2.3, 5.5, 0.3, 1.2, 1.5, 1.3, GOLD);   // forearm
+  b(dog, -2.4, 4.2, 0.5, 1.3, 1.0, 1.5, DGOLD);  // paw
 
-  // Right arm (lowered, holding ball)
-  box(player,  2.15, 7.5,  0, 1.1, 2.5, 1.1, C.black);  // shoulder/upper arm
-  box(player,  2.15, 5.8,  0.3, 1.0, 1.8, 1.0, C.skin); // forearm angled
-  box(player,  2.5,  4.6,  0.8, 0.9, 0.8, 0.9, C.skin); // hand near ball
+  // Right arm (forward, holding ball)
+  b(dog,  2.2, 7.0, 0,   1.3, 2.2, 1.2, GOLD);
+  b(dog,  2.6, 5.2, 0.8, 1.2, 1.8, 1.3, GOLD);
+  b(dog,  2.8, 3.6, 1.4, 1.3, 1.0, 1.5, DGOLD);  // paw near ball
 
-  // Neck
-  box(player,  0, 10.5, 0, 0.9, 0.9, 0.9, C.skin);
+  // ── Neck ────────────────────────────────────────────
+  b(dog,  0, 10.0, 0,   2.0, 1.2, 1.8, GOLD);
 
-  // Head
-  box(player,  0, 12.5, 0, 2.8, 3.0, 2.8, C.skin);
-  // Hair
-  box(player,  0, 14.1, 0, 2.8, 0.6, 2.8, C.hair);
-  box(player,  0, 13.5,-1.1, 2.8, 1.2, 0.6, C.hair); // back hair
-  // Eyes
-  box(player, -0.7, 12.5, 1.42, 0.55, 0.45, 0.08, C.eye);
-  box(player,  0.7, 12.5, 1.42, 0.55, 0.45, 0.08, C.eye);
-  // Eyebrows
-  box(player, -0.7, 13.0, 1.42, 0.7, 0.18, 0.08, C.hair);
-  box(player,  0.7, 13.0, 1.42, 0.7, 0.18, 0.08, C.hair);
-  // Mouth
-  box(player,  0, 11.8, 1.42, 0.9, 0.18, 0.08, C.hair);
+  // ── Head ────────────────────────────────────────────
+  b(dog,  0, 12.8, 0,   4.2, 3.6, 3.8, GOLD);    // main head
 
-  // Ears
-  box(player, -1.45, 12.3, 0, 0.22, 0.7, 0.7, C.skin);
-  box(player,  1.45, 12.3, 0, 0.22, 0.7, 0.7, C.skin);
+  // Floppy ears (hang on sides)
+  b(dog, -2.4, 11.8,-0.2, 1.0, 3.5, 2.8, DGOLD); // left ear
+  b(dog,  2.4, 11.8,-0.2, 1.0, 3.5, 2.8, DGOLD); // right ear
 
-  // ── Basketball ───────────────────────────────────────
-  const ball = new THREE.Group();
-  ball.position.set(3.2, 3.2, 1.6);
+  // Muzzle / snout
+  b(dog,  0, 11.6, 2.0,  2.6, 2.0, 1.2, CREAM);
 
-  const ballMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1.05, 24, 24),
-    new THREE.MeshLambertMaterial({ color: C.orange })
+  // Nose
+  b(dog,  0, 12.5, 2.65, 1.3, 0.8, 0.2, BNOSE);
+
+  // Eyes (whites + pupils)
+  b(dog, -1.2, 13.4, 1.95, 0.9, 0.9, 0.2, WHITE);
+  b(dog,  1.2, 13.4, 1.95, 0.9, 0.9, 0.2, WHITE);
+  b(dog, -1.2, 13.4, 2.08, 0.5, 0.5, 0.1, BNOSE);
+  b(dog,  1.2, 13.4, 2.08, 0.5, 0.5, 0.1, BNOSE);
+  // Eye shine (cute!)
+  b(dog, -1.0, 13.6, 2.12, 0.18, 0.18, 0.08, 0xffffff);
+  b(dog,  1.4, 13.6, 2.12, 0.18, 0.18, 0.08, 0xffffff);
+
+  // Eyebrows (tilted = happy face)
+  b(dog, -1.2, 14.1, 1.96, 1.1, 0.22, 0.12, DGOLD);
+  b(dog,  1.2, 14.1, 1.96, 1.1, 0.22, 0.12, DGOLD);
+
+  // Tongue (sticking out, cute!)
+  b(dog, -0.3, 11.0, 2.68, 1.0, 0.6, 0.2, PINK);
+  b(dog, -0.3, 10.3, 2.60, 1.0, 0.8, 0.3, PINK);
+
+  // ── Basketball ──────────────────────────────────────
+  var ballGroup = new THREE.Group();
+  ballGroup.position.set(3.4, 2.5, 2.2);
+
+  var ball = new THREE.Mesh(
+    new THREE.SphereGeometry(1.1, 24, 24),
+    mat(ORANGE)
   );
-  ball.add(ballMesh);
+  ballGroup.add(ball);
 
-  // Seam lines on ball
-  const seamMat = new THREE.LineBasicMaterial({ color: C.seam });
-  function addSeam(rotY) {
-    const pts = [];
-    for (let i = 0; i <= 48; i++) {
-      const t = (i / 48) * Math.PI * 2;
-      pts.push(new THREE.Vector3(
-        Math.cos(t) * 1.07,
-        Math.sin(t) * 0.35,
-        Math.sin(t) * 1.07
-      ));
+  // Seams
+  var seamMat = new THREE.LineBasicMaterial({ color: SEAM });
+  function seam(rotY) {
+    var pts = [];
+    for (var i = 0; i <= 48; i++) {
+      var t = (i / 48) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(t) * 1.12, Math.sin(t) * 0.38, Math.sin(t) * 1.12));
     }
-    const seam = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(pts),
-      seamMat
-    );
-    seam.rotation.y = rotY;
-    ball.add(seam);
+    var line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), seamMat);
+    line.rotation.y = rotY;
+    ballGroup.add(line);
   }
-  addSeam(0);
-  addSeam(Math.PI / 2);
-
-  // Vertical seam (equator)
-  const eqPts = [];
-  for (let i = 0; i <= 48; i++) {
-    const t = (i / 48) * Math.PI * 2;
-    eqPts.push(new THREE.Vector3(Math.cos(t) * 1.07, Math.sin(t) * 1.07, 0));
+  seam(0); seam(Math.PI / 2);
+  var eq = [];
+  for (var i = 0; i <= 48; i++) {
+    var t2 = (i / 48) * Math.PI * 2;
+    eq.push(new THREE.Vector3(Math.cos(t2) * 1.12, Math.sin(t2) * 1.12, 0));
   }
-  ball.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(eqPts), seamMat));
+  ballGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(eq), seamMat));
 
-  player.add(ball);
+  dog.add(ballGroup);
+  dog.position.y = -7;
+  scene.add(dog);
 
-  // Center player
-  player.position.y = -6.5;
-  scene.add(player);
-
-  // ── Resize ───────────────────────────────────────────
-  function resize() {
-    const W = getW();
+  // ── Resize ──────────────────────────────────────────
+  window.addEventListener('resize', function() {
+    W = Math.min(window.innerWidth - 32, 380);
     renderer.setSize(W, H);
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
-    canvas.style.width  = W + 'px';
-    canvas.style.height = H + 'px';
-  }
-  resize();
-  window.addEventListener('resize', resize);
+  });
 
-  // ── Interaction ───────────────────────────────────────
-  let dragging = false;
-  let autoSpin = true;
-  let rotY = 0.3, rotX = 0;
-  let prev = { x: 0, y: 0 };
-  let spinTimer;
+  // ── Drag interaction ─────────────────────────────────
+  var dragging = false;
+  var autoSpin = true;
+  var rotY = 0.4, rotX = 0.1;
+  var prev = { x: 0, y: 0 };
+  var spinTimer;
 
-  function resumeSpin() {
-    clearTimeout(spinTimer);
-    spinTimer = setTimeout(() => { autoSpin = true; }, 2500);
-  }
+  function stopSpin() { autoSpin = false; clearTimeout(spinTimer); }
+  function startSpin() { spinTimer = setTimeout(function() { autoSpin = true; }, 2500); }
 
-  canvas.addEventListener('mousedown',  e => { dragging = true; autoSpin = false; prev = { x: e.clientX, y: e.clientY }; });
-  window.addEventListener('mouseup',    () => { dragging = false; resumeSpin(); });
-  window.addEventListener('mousemove',  e => {
+  canvas.addEventListener('mousedown',  function(e) { dragging = true; stopSpin(); prev = { x: e.clientX, y: e.clientY }; e.preventDefault(); });
+  window.addEventListener('mouseup',    function() { if(dragging){ dragging = false; startSpin(); } });
+  window.addEventListener('mousemove',  function(e) {
     if (!dragging) return;
-    rotY += (e.clientX - prev.x) * 0.012;
-    rotX += (e.clientY - prev.y) * 0.012;
-    rotX = Math.max(-0.6, Math.min(0.6, rotX));
+    rotY += (e.clientX - prev.x) * 0.013;
+    rotX += (e.clientY - prev.y) * 0.013;
+    rotX = Math.max(-0.7, Math.min(0.7, rotX));
     prev = { x: e.clientX, y: e.clientY };
   });
 
-  canvas.addEventListener('touchstart', e => {
-    dragging = true; autoSpin = false;
-    prev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  }, { passive: true });
-  window.addEventListener('touchend',   () => { dragging = false; resumeSpin(); });
-  window.addEventListener('touchmove',  e => {
+  canvas.addEventListener('touchstart', function(e) { dragging = true; stopSpin(); prev = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+  window.addEventListener('touchend',   function() { if(dragging){ dragging = false; startSpin(); } });
+  window.addEventListener('touchmove',  function(e) {
     if (!dragging) return;
-    rotY += (e.touches[0].clientX - prev.x) * 0.012;
-    rotX += (e.touches[0].clientY - prev.y) * 0.012;
-    rotX = Math.max(-0.6, Math.min(0.6, rotX));
+    rotY += (e.touches[0].clientX - prev.x) * 0.013;
+    rotX += (e.touches[0].clientY - prev.y) * 0.013;
+    rotX = Math.max(-0.7, Math.min(0.7, rotX));
     prev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }, { passive: true });
 
-  // ── Animate ───────────────────────────────────────────
-  let t = 0;
+  // ── Animate ──────────────────────────────────────────
+  var tick = 0;
+  var tailAngle = 0;
+
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.04;
+    tick += 0.04;
 
-    if (autoSpin) rotY += 0.006;
+    // Auto spin
+    if (autoSpin) rotY += 0.008;
+    dog.rotation.y = rotY;
+    dog.rotation.x = rotX;
 
-    player.rotation.y = rotY;
-    player.rotation.x = rotX;
+    // Ball bounce
+    ballGroup.position.y = 2.5 + Math.abs(Math.sin(tick * 1.2)) * 0.6;
+    ball.rotation.z = tick * 0.4;
 
-    // Basketball bounce in place
-    ball.position.y = 3.2 + Math.abs(Math.sin(t)) * 0.4;
-    ball.rotation.z = Math.sin(t * 0.5) * 0.15;
+    // Tail wag (find tail by index — the tail blocks are indices 3 & 4 in dog children)
+    tailAngle = Math.sin(tick * 3) * 0.35;
+    // wag the whole dog group slightly for cute effect
+    dog.rotation.z = Math.sin(tick * 3) * 0.02;
 
     renderer.render(scene, camera);
   }
